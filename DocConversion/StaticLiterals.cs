@@ -2,6 +2,6 @@
 {
     internal static class StaticLiterals
     {
-        public static string[] DocumentFileExtensions => new[] { ".doc", ".docx", ".pdf" };
+        public static string[] DocumentFileExtensions => new[] { ".doc", ".docx", ".pdf", ".md" };
     }
 }

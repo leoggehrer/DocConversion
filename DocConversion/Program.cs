@@ -135,6 +135,7 @@ namespace DocConversion
         }
         private static void ConversionTo(string sourceFile, string targetExtension)
         {
+            var sourceExtension = Path.GetExtension(sourceFile);
             var targetFileName = $"{Path.GetFileNameWithoutExtension(sourceFile)}{targetExtension}";
             var targetPath = Path.GetDirectoryName(sourceFile);
 
@@ -145,14 +146,21 @@ namespace DocConversion
             }
             if (string.IsNullOrWhiteSpace(targetPath) == false)
             {
-                var document = new Document(sourceFile);
-                var targetFile = Path.Combine(targetPath, targetFileName);
+                if (sourceExtension.Equals(".md", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    CleanupMarkdown(sourceFile);
+                }
+                else
+                {
+                    var document = new Document(sourceFile);
+                    var targetFile = Path.Combine(targetPath, targetFileName);
 
-                Directory.CreateDirectory(targetPath);
+                    Directory.CreateDirectory(targetPath);
 
-                document.Save(targetFile);
+                    document.Save(targetFile);
 
-                CleanupMarkdown(targetFile);
+                    CleanupMarkdown(targetFile);
+                }
             }
         }
         private static void CleanupMarkdown(string filePath)
