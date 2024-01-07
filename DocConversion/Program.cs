@@ -17,6 +17,7 @@ namespace DocConversion
 
             UserPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             SourcePath = UserPath;
+            TargetPath = UserPath;
             ClassConstructed();
         }
         static partial void ClassConstructing();
@@ -27,6 +28,7 @@ namespace DocConversion
         internal static string? HomePath { get; set; }
         internal static string UserPath { get; set; }
         internal static string SourcePath { get; set; }
+        internal static string TargetPath { get; set; }
         internal static List<string> SourceFiles { get; } = new();
         internal static string TargetExetension => ".md";
 
@@ -52,7 +54,7 @@ namespace DocConversion
 
                 RunBusyProgress = false;
                 Task.Delay(250).Wait();
-                PrintHeader(SourcePath);
+                PrintHeader(SourcePath, TargetPath);
                 Console.WriteLine($"[x|X...Quit]: ");
                 Console.WriteLine();
                 Console.Write("Choose [n|n,n|x|X]: ");
@@ -79,12 +81,27 @@ namespace DocConversion
                                 Console.WriteLine("Invalid path!");
                             }
                         }
-                        if (select > 0 && select - 1 < SourceFiles.Count)
+                        if (select == 1)
+                        {
+                            Console.WriteLine();
+                            Console.Write("Enter target path: ");
+                            var selectOrPath = Console.ReadLine();
+
+                            if (Directory.Exists(selectOrPath))
+                            {
+                                TargetPath = selectOrPath;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid path!");
+                            }
+                        }
+                        if (select > 1 && select - 1 < SourceFiles.Count)
                         {
                             var sourceFile = SourceFiles[select - 1];
 
                             PrintBusyProgress();
-                            ConversionTo(sourceFile, TargetExetension);
+                            ConversionTo(sourceFile, TargetPath, TargetExetension);
                         }
                     }
                     else
@@ -102,15 +119,15 @@ namespace DocConversion
                             {
                                 var sourceFile = SourceFiles[number - 1];
 
-                                ConversionTo(sourceFile, TargetExetension);
+                                ConversionTo(sourceFile, TargetPath, TargetExetension);
                             }
                         }
                     }
-                    PrintHeader(SourcePath);
+                    PrintHeader(SourcePath, TargetPath);
                 }
             } while (running);
         }
-        private static void PrintHeader(string sourcePath)
+        private static void PrintHeader(string sourcePath, string targetPath)
         {
             var mnuIdx = 0;
 
@@ -121,9 +138,11 @@ namespace DocConversion
             Console.WriteLine("===================");
             Console.WriteLine();
             Console.WriteLine($"Source path:   {sourcePath}");
+            Console.WriteLine($"Target path:   {targetPath}");
             Console.WriteLine($"Conversion to: {(TargetExetension.Equals(".md", StringComparison.CurrentCultureIgnoreCase) ? $"Markdown [{TargetExetension}]" : TargetExetension)}");
             Console.WriteLine();
             Console.WriteLine($"[{mnuIdx++, 2}] Source path............Change path");
+            Console.WriteLine($"[{mnuIdx++, 2}] Target path............Change path");
             Console.WriteLine();
             SourceFiles.Clear();
             foreach (var document in GetDocuments(sourcePath))
@@ -133,11 +152,10 @@ namespace DocConversion
             }
             Console.WriteLine();
         }
-        private static void ConversionTo(string sourceFile, string targetExtension)
+        private static void ConversionTo(string sourceFile, string targetPath, string targetExtension)
         {
             var sourceExtension = Path.GetExtension(sourceFile);
             var targetFileName = $"{Path.GetFileNameWithoutExtension(sourceFile)}{targetExtension}";
-            var targetPath = Path.GetDirectoryName(sourceFile);
 
             targetPath = Path.Combine(targetPath!, Path.GetFileNameWithoutExtension(targetFileName));
             if (Path.Exists(targetPath))
@@ -212,7 +230,6 @@ namespace DocConversion
                             }
                             newLines.Add(line.Replace("\t", "  ").TrimEnd());
                         }
-
                         prevLine = line;
                     }
                 }
@@ -274,6 +291,7 @@ namespace DocConversion
             if (args.Any() && Directory.Exists(args[0]))
             {
                 SourcePath = args[0];
+                TargetPath = args[0];
             }
             RunApp();
         }
