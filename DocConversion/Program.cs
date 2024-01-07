@@ -297,10 +297,14 @@ namespace DocConversion
 
         static void Main(string[] args)
         {
-            if (args.Any() && Directory.Exists(args[0]))
+            if (args.Length > 0 && Directory.Exists(args[0]))
             {
                 SourcePath = args[0];
                 TargetPath = args[0];
+            }
+            if (args.Length > 1 && Directory.Exists(args[1]))
+            {
+                TargetPath = args[1];
             }
             RunApp();
         }

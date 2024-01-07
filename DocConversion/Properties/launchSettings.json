@@ -2,7 +2,7 @@
   "profiles": {
     "DocConversion": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\ggehr\\OneDrive - HTBLA Leonding\\Documents\""
+      "commandLineArgs": "\"C:\\Users\\ggehr\\OneDrive - HTBLA Leonding\\Documents\" \"C:\\Temp\\DocConversion\""
     }
   }
 }
