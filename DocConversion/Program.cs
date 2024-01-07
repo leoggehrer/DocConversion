@@ -16,8 +16,8 @@ namespace DocConversion
                        : Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 
             UserPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            SourcePath = UserPath;
-            TargetPath = UserPath;
+            SourcePath = Path.Combine(UserPath, "Downloads");
+            TargetPath = "/Users/ggehrer/source/repos/leoggehrer/34_ABIF_ACIF_POSE_EXERCISES";// UserPath;
             ClassConstructed();
         }
         static partial void ClassConstructing();
@@ -45,6 +45,7 @@ namespace DocConversion
 
             do
             {
+                var offset = 2;
                 var input = string.Empty;
                 var targetPaths = new List<string>();
 
@@ -96,9 +97,9 @@ namespace DocConversion
                                 Console.WriteLine("Invalid path!");
                             }
                         }
-                        if (select > 1 && select - 1 < SourceFiles.Count)
+                        if (select > 1 && select - offset < SourceFiles.Count)
                         {
-                            var sourceFile = SourceFiles[select - 1];
+                            var sourceFile = SourceFiles[select - offset];
 
                             PrintBusyProgress();
                             ConversionTo(sourceFile, TargetPath, TargetExetension);
@@ -115,9 +116,9 @@ namespace DocConversion
                         PrintBusyProgress();
                         foreach (var number in numbers!)
                         {
-                            if (number > 0 && number - 1 < SourceFiles.Count)
+                            if (number > 0 && number - offset < SourceFiles.Count)
                             {
-                                var sourceFile = SourceFiles[number - 1];
+                                var sourceFile = SourceFiles[number - offset];
 
                                 ConversionTo(sourceFile, TargetPath, TargetExetension);
                             }
@@ -175,7 +176,15 @@ namespace DocConversion
 
                     Directory.CreateDirectory(targetPath);
 
-                    document.Save(targetFile);
+                    try
+                    {
+                        document.Save(targetFile, SaveFormat.Markdown);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+//                    document.Save(targetFile);
 
                     CleanupMarkdown(targetFile);
                 }
