@@ -142,15 +142,17 @@ namespace DocConversion
             Console.WriteLine($"Target path:   {targetPath}");
             Console.WriteLine($"Conversion to: {(TargetExetension.Equals(".md", StringComparison.CurrentCultureIgnoreCase) ? $"Markdown [{TargetExetension}]" : TargetExetension)}");
             Console.WriteLine();
-            Console.WriteLine($"[{mnuIdx++, 2}] Source path............Change path");
-            Console.WriteLine($"[{mnuIdx++, 2}] Target path............Change path");
+            Console.WriteLine($"[{mnuIdx++,2}] Source path............Change path");
+            Console.WriteLine($"[{mnuIdx++,2}] Target path............Change path");
             Console.WriteLine();
+
             SourceFiles.Clear();
             foreach (var document in GetDocuments(sourcePath))
             {
                 SourceFiles.Add(document);
-                Console.WriteLine($"[{mnuIdx++, 2}] {Path.GetFileName(document)}");
+                Console.WriteLine($"[{mnuIdx++,2}] {Path.GetFileName(document)}");
             }
+            Console.WriteLine($"[{mnuIdx++,2}] Refresh documents");
             Console.WriteLine();
         }
         private static void ConversionTo(string sourceFile, string targetPath, string targetExtension)
@@ -171,20 +173,20 @@ namespace DocConversion
                 }
                 else
                 {
-                    var document = new Document(sourceFile);
                     var targetFile = Path.Combine(targetPath, targetFileName);
 
                     Directory.CreateDirectory(targetPath);
 
                     try
                     {
-                        document.Save(targetFile, SaveFormat.Markdown);
+                        var document = new Document(sourceFile);
+
+                        document.Save(targetPath, SaveFormat.Markdown);
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                     }
-//                    document.Save(targetFile);
 
                     CleanupMarkdown(targetFile);
                 }
@@ -230,7 +232,7 @@ namespace DocConversion
                             }
                             newLines.Add(line.Replace("\t", "  ").TrimEnd());
                         }
-                        else if (string.IsNullOrWhiteSpace(line) == false 
+                        else if (string.IsNullOrWhiteSpace(line) == false
                                  || string.IsNullOrWhiteSpace(prevLine) == false)
                         {
                             if (prevLine.StartsWith("#") && string.IsNullOrWhiteSpace(line) == false)
@@ -267,7 +269,6 @@ namespace DocConversion
             return GetDocuments(path, "*.*");
         }
         #endregion App methods
-
 
         internal static void PrintBusyProgress()
         {
