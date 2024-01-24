@@ -181,7 +181,7 @@ namespace DocConversion
                     {
                         var document = new Document(sourceFile);
 
-                        document.Save(targetPath, SaveFormat.Markdown);
+                        document.Save(targetFile, SaveFormat.Markdown);
                     }
                     catch (Exception ex)
                     {
