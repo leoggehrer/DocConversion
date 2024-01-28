@@ -7,19 +7,19 @@ namespace DocConversion
     internal class MarkdownConverter
     {
         /// <summary>
-        /// Converts a source file to a target format and saves it to the specified target path.
+        /// Converts a document to Markdown format and saves it to the specified target path and file name.
         /// </summary>
-        /// <param name="sourceFile">The path of the source file to be converted.</param>
-        /// <param name="targetPath">The path where the converted file will be saved.</param>
-        /// <param name="targetExtension">The extension of the target file format.</param>
-        public static void ConversionTo(string sourceFile, string targetPath, string targetExtension)
+        /// <param name="sourceFile">The path of the source document file.</param>
+        /// <param name="targetPath">The path of the target directory where the converted document will be saved.</param>
+        /// <param name="targetFileName">The name of the target file.</param>
+        public static void ConversionTo(string sourceFile, string targetPath, string targetFileName)
         {
-            var sourceExtension = Path.GetExtension(sourceFile);
-            var targetFileName = $"{Path.GetFileNameWithoutExtension(sourceFile)}{targetExtension}";
-
-            targetPath = Path.Combine(targetPath!, Path.GetFileNameWithoutExtension(targetFileName));
-
             var targetFile = Path.Combine(targetPath, targetFileName);
+            var sourceExtension = Path.GetExtension(sourceFile);
+            var targetExtension = Path.GetExtension(targetFile);
+
+//            targetPath = Path.Combine(targetPath!, Path.GetFileNameWithoutExtension(targetFileName));
+
 
             if (File.Exists(targetFile) && targetExtension.Equals(".md", StringComparison.CurrentCultureIgnoreCase))
             {

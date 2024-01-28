@@ -173,7 +173,7 @@ namespace DocConversion
                 case ".pdf":
                 case ".doc":
                 case ".docx":
-                    MarkdownConverter.ConversionTo(file, targetPath, ".md");
+                    MarkdownConverter.ConversionTo(file, targetPath, "ReadMe.md");
                     break;
                 default:
                     Console.WriteLine($"The file extension '{extension}' is not supported.");
