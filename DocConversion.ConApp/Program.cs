@@ -15,8 +15,13 @@
                        : Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 
             UserPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            SourcePath = Path.Combine(UserPath, "Downloads");
-            TargetPath = "C:\\Users\\ggehr\\source\\repos\\leoggehrer\\HtlLeo\\34_ABIF_ACIF_POSE_EXERCISES";// UserPath;
+            SourcePath = Path.Combine(UserPath, "Documents");
+            TargetPath = Path.Combine(UserPath, "Documents");
+            if (Directory.Exists(SourcePath) == false)
+            {
+                SourcePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                TargetPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            }
             ClassConstructed();
         }
         static partial void ClassConstructing();
