@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DocConversion.Models
+﻿namespace DocConversion.ConApp.Models
 {
     /// Represents a menu item.
     /// Gets or sets the unique key of the menu item.

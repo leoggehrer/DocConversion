@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "DocConversion": {
-      "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\ggehr\\OneDrive\\Dokumente\\Exercises\" \"C:\\Users\\ggehr\\source\\repos\\leoggehrer\\HtlLeo\\34_ABIF_ACIF_POSE_EXERCISES\""
-    }
-  }
-}

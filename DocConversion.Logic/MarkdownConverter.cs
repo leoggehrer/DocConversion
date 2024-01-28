@@ -2,9 +2,9 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace DocConversion
+namespace DocConversion.Logic
 {
-    internal class MarkdownConverter
+    public partial class MarkdownConverter
     {
         /// <summary>
         /// Converts a document to Markdown format and saves it to the specified target path and file name.
@@ -14,16 +14,15 @@ namespace DocConversion
         /// <param name="targetFileName">The name of the target file.</param>
         public static void ConversionTo(string sourceFile, string targetPath, string targetFileName)
         {
-            var targetFile = Path.Combine(targetPath, targetFileName);
             var sourceExtension = Path.GetExtension(sourceFile);
-            var targetExtension = Path.GetExtension(targetFile);
+            var targetExtension = Path.GetExtension(targetFileName);
+            var sourceFileNameWithoutExtension= Path.GetFileNameWithoutExtension(sourceFile);
+            var conversionPath = Path.Combine(targetPath, sourceFileNameWithoutExtension);
+            var conversionFile = Path.Combine(conversionPath, targetFileName);
 
-//            targetPath = Path.Combine(targetPath!, Path.GetFileNameWithoutExtension(targetFileName));
-
-
-            if (File.Exists(targetFile) && targetExtension.Equals(".md", StringComparison.CurrentCultureIgnoreCase))
+            if (File.Exists(conversionFile) && targetExtension.Equals(".md", StringComparison.CurrentCultureIgnoreCase))
             {
-                CleaningAndFormatting(targetFile);
+                CleaningAndFormatting(conversionFile);
             }
             else if (File.Exists(sourceFile) && sourceExtension.Equals(".md", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -31,24 +30,24 @@ namespace DocConversion
             }
             else if (File.Exists(sourceFile))
             {
-                if (Path.Exists(targetPath))
+                if (Path.Exists(conversionPath))
                 {
-                    Directory.Delete(targetPath, true);
+                    Directory.Delete(conversionPath, true);
                 }
-                Directory.CreateDirectory(targetPath);
+                Directory.CreateDirectory(conversionPath);
 
                 try
                 {
                     var document = new Document(sourceFile);
 
-                    document.Save(targetFile, SaveFormat.Markdown);
+                    document.Save(conversionFile, SaveFormat.Markdown);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
 
-                CleaningAndFormatting(targetFile);
+                CleaningAndFormatting(conversionFile);
             }
         }
         /// <summary>

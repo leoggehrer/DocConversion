@@ -1,6 +1,5 @@
-﻿using DocConversion.Models;
-
-namespace DocConversion
+﻿
+namespace DocConversion.ConApp
 {
     /// <summary>
     /// Represents the application for converting documents to different formats.
@@ -54,7 +53,7 @@ namespace DocConversion
         /// Prints the screen with the menu items and returns an array of MenuItem objects.
         /// </summary>
         /// <returns>An array of MenuItem objects.</returns>
-        private static MenuItem[] PrintScreen()
+        private static Models.MenuItem[] PrintScreen()
         {
             var saveForeColor = Console.ForegroundColor;
             var menuItems = CreateMenuItems(DocumentPath, StaticLiterals.DocumentFileExtensions);
@@ -120,11 +119,11 @@ namespace DocConversion
         /// <param name="path">The path to search for files.</param>
         /// <param name="extensions">The file extensions to include.</param>
         /// <returns>An array of menu items.</returns>
-        private static MenuItem[] CreateMenuItems(string path, string[] extensions)
+        private static Models.MenuItem[] CreateMenuItems(string path, string[] extensions)
         {
             var mnuIdx = 0;
             var files = Program.GetFiles(path, "*.*", extensions);
-            var result = new List<MenuItem>()
+            var result = new List<Models.MenuItem>()
             {
                 new ()
                 {
@@ -142,15 +141,15 @@ namespace DocConversion
 
             foreach (var file in files)
             {
-                result.Add(new MenuItem()
+                result.Add(new Models.MenuItem()
                 {
                     Key = (++mnuIdx).ToString(),
-                    Text = $"Format {file.Replace(path, "...")}",
+                    Text = $"Convert {file.Replace(path, "...")}",
                     Action = () => ConvertDocument(file, TargetPath),
                 });
             }
 
-            result.Add(new MenuItem()
+            result.Add(new Models.MenuItem()
             {
                 Key = (++mnuIdx).ToString(),
                 Text = "x ... Exit",
@@ -173,7 +172,7 @@ namespace DocConversion
                 case ".pdf":
                 case ".doc":
                 case ".docx":
-                    MarkdownConverter.ConversionTo(file, targetPath, "ReadMe.md");
+                    Logic.MarkdownConverter.ConversionTo(file, targetPath, "ReadMe.md");
                     break;
                 default:
                     Console.WriteLine($"The file extension '{extension}' is not supported.");

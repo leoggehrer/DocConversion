@@ -1,6 +1,5 @@
-﻿using DocConversion.Models;
-
-namespace DocConversion
+﻿
+namespace DocConversion.ConApp
 {
     /// <summary>
     /// Represents an application for formatting documents.
@@ -49,7 +48,7 @@ namespace DocConversion
         /// Prints the screen and returns an array of menu items.
         /// </summary>
         /// <returns>An array of menu items.</returns>
-        private static MenuItem[] PrintScreen()
+        private static Models.MenuItem[] PrintScreen()
         {
             var saveForeColor = Console.ForegroundColor;
             var menuItems = CreateMenuItems(DocumentPath, [ ".md" ]);
@@ -114,11 +113,11 @@ namespace DocConversion
         /// <param name="path">The path to search for files.</param>
         /// <param name="extensions">The file extensions to filter the files.</param>
         /// <returns>An array of MenuItem objects.</returns>
-        private static MenuItem[] CreateMenuItems(string path, string[] extensions)
+        private static Models.MenuItem[] CreateMenuItems(string path, string[] extensions)
         {
             var mnuIdx = 0;
             var files = Program.GetFiles(path, "*.*", extensions);
-            var result = new List<MenuItem>()
+            var result = new List<Models.MenuItem>()
             {
                 new ()
                 {
@@ -130,7 +129,7 @@ namespace DocConversion
 
             foreach (var file in files)
             {
-                result.Add(new MenuItem()
+                result.Add(new Models.MenuItem()
                 {
                     Key = (++mnuIdx).ToString(),
                     Text = $"Format {file.Replace(path, "...")}",
@@ -151,7 +150,7 @@ namespace DocConversion
             switch (extension)
             {
                 case ".md":
-                    MarkdownConverter.CleaningAndFormatting(file);
+                    Logic.MarkdownConverter.CleaningAndFormatting(file);
                     break;
                 default:
                     Console.WriteLine($"The file extension '{extension}' is not supported.");

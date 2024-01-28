@@ -1,4 +1,4 @@
-﻿namespace DocConversion
+﻿namespace DocConversion.ConApp
 {
     using System;
     /// <summary>

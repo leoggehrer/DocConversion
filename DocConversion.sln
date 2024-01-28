@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocConversion", "DocConversion\DocConversion.csproj", "{280AF99E-EF8E-429E-BB3F-16504F954EFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocConversion.ConApp", "DocConversion.ConApp\DocConversion.ConApp.csproj", "{373CA888-BF56-405A-8211-49290EB7655A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocConversion.Logic", "DocConversion.Logic\DocConversion.Logic.csproj", "{D4FC9CFA-EF33-4CCA-807B-E85300422F25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{280AF99E-EF8E-429E-BB3F-16504F954EFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{280AF99E-EF8E-429E-BB3F-16504F954EFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{280AF99E-EF8E-429E-BB3F-16504F954EFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{280AF99E-EF8E-429E-BB3F-16504F954EFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{373CA888-BF56-405A-8211-49290EB7655A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{373CA888-BF56-405A-8211-49290EB7655A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{373CA888-BF56-405A-8211-49290EB7655A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{373CA888-BF56-405A-8211-49290EB7655A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4FC9CFA-EF33-4CCA-807B-E85300422F25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4FC9CFA-EF33-4CCA-807B-E85300422F25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4FC9CFA-EF33-4CCA-807B-E85300422F25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4FC9CFA-EF33-4CCA-807B-E85300422F25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

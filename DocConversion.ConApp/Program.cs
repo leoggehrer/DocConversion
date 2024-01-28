@@ -1,4 +1,4 @@
-﻿namespace DocConversion
+﻿namespace DocConversion.ConApp
 {
     /// <summary>
     /// Represents the main program class.
@@ -16,7 +16,7 @@
 
             UserPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             SourcePath = Path.Combine(UserPath, "Downloads");
-            TargetPath = "C:\\Users\\g.gehrer\\source\\repos\\leoggehrer\\34_ABIF_ACIF_POSE_EXERCISES";// UserPath;
+            TargetPath = "C:\\Users\\ggehr\\source\\repos\\leoggehrer\\HtlLeo\\34_ABIF_ACIF_POSE_EXERCISES";// UserPath;
             ClassConstructed();
         }
         static partial void ClassConstructing();
