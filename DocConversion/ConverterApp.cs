@@ -2,6 +2,9 @@
 
 namespace DocConversion
 {
+    /// <summary>
+    /// Represents the application for converting documents to different formats.
+    /// </summary>
     internal partial class ConverterApp
     {
         #region Class-Constructors
@@ -47,6 +50,10 @@ namespace DocConversion
         #endregion Properties
 
         #region Methods
+        /// <summary>
+        /// Prints the screen with the menu items and returns an array of MenuItem objects.
+        /// </summary>
+        /// <returns>An array of MenuItem objects.</returns>
         private static MenuItem[] PrintScreen()
         {
             var saveForeColor = Console.ForegroundColor;
@@ -74,8 +81,11 @@ namespace DocConversion
                 var menuItems = PrintScreen();
 
                 input = Console.ReadLine()?.ToLower() ?? String.Empty;
-                menuItems.FirstOrDefault(m => m.Key.Equals(input))?.Action();
-                running = input.Equals("x") == false;
+                foreach (var item in input.Split(','))
+                {
+                    menuItems.FirstOrDefault(m => m.Key.Equals(item))?.Action();
+                    running = item.Equals("x") ? false : running;
+                }
                 ProgressBar.Stop();
             } while (running);
         }
@@ -102,8 +112,14 @@ namespace DocConversion
         private static void PrintFooter()
         {
             Console.WriteLine();
-            Console.Write("Choose: ");
+            Console.Write("Choose [n|n,n|x|X]: ");
         }
+        /// <summary>
+        /// Creates an array of menu items based on the specified path and extensions.
+        /// </summary>
+        /// <param name="path">The path to search for files.</param>
+        /// <param name="extensions">The file extensions to include.</param>
+        /// <returns>An array of menu items.</returns>
         private static MenuItem[] CreateMenuItems(string path, string[] extensions)
         {
             var mnuIdx = 0;
@@ -133,9 +149,21 @@ namespace DocConversion
                     Action = () => ConvertDocument(file, TargetPath),
                 });
             }
+
+            result.Add(new MenuItem()
+            {
+                Key = (++mnuIdx).ToString(),
+                Text = "x ... Exit",
+                Action = () => Console.WriteLine("Exiting..."),
+            });
             return [.. result];
         }
 
+        /// <summary>
+        /// Converts a document to a different format based on its file extension.
+        /// </summary>
+        /// <param name="file">The path of the document file to be converted.</param>
+        /// <param name="targetPath">The path where the converted document will be saved.</param>
         private static void ConvertDocument(string file, string targetPath)
         {
             var extension = Path.GetExtension(file);
@@ -153,6 +181,11 @@ namespace DocConversion
             }
         }
 
+        /// <summary>
+        /// Changes the document path based on user input.
+        /// </summary>
+        /// <param name="path">The original document path.</param>
+        /// <returns>The updated document path.</returns>
         private static string ChangeDocumentPath(string path)
         {
             var result = path;
@@ -170,6 +203,11 @@ namespace DocConversion
             }
             return result;
         }
+        /// <summary>
+        /// Changes the target path for saving the conversion.
+        /// </summary>
+        /// <param name="path">The original path.</param>
+        /// <returns>The updated target path.</returns>
         private static string ChangeTargetPath(string path)
         {
             var result = path;
@@ -188,6 +226,5 @@ namespace DocConversion
             return result;
         }
         #endregion Methods
-
     }
 }

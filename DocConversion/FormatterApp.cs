@@ -2,6 +2,9 @@
 
 namespace DocConversion
 {
+    /// <summary>
+    /// Represents an application for formatting documents.
+    /// </summary>
     internal partial class FormatterApp
     {
         #region Class-Constructors
@@ -42,6 +45,10 @@ namespace DocConversion
         #endregion Properties
 
         #region Methods
+        /// <summary>
+        /// Prints the screen and returns an array of menu items.
+        /// </summary>
+        /// <returns>An array of menu items.</returns>
         private static MenuItem[] PrintScreen()
         {
             var saveForeColor = Console.ForegroundColor;
@@ -69,8 +76,11 @@ namespace DocConversion
                 var menuItems = PrintScreen();
 
                 input = Console.ReadLine()?.ToLower() ?? String.Empty;
-                menuItems.FirstOrDefault(m => m.Key.Equals(input))?.Action();
-                running = input.Equals("x") == false;
+                foreach (var item in input.Split(','))
+                {
+                    menuItems.FirstOrDefault(m => m.Key.Equals(item))?.Action();
+                    running = item.Equals("x") ? false : running;
+                }
                 ProgressBar.Stop();
             } while (running);
         }
@@ -96,8 +106,14 @@ namespace DocConversion
         private static void PrintFooter()
         {
             Console.WriteLine();
-            Console.Write("Choose: ");
+            Console.Write("Choose [n|n,n|x|X]: ");
         }
+        /// <summary>
+        /// Creates an array of menu items based on the specified path and file extensions.
+        /// </summary>
+        /// <param name="path">The path to search for files.</param>
+        /// <param name="extensions">The file extensions to filter the files.</param>
+        /// <returns>An array of MenuItem objects.</returns>
         private static MenuItem[] CreateMenuItems(string path, string[] extensions)
         {
             var mnuIdx = 0;
@@ -124,6 +140,10 @@ namespace DocConversion
             return [.. result];
         }
 
+        /// <summary>
+        /// Formats the specified document based on its file extension.
+        /// </summary>
+        /// <param name="file">The path of the document file.</param>
         private static void FormatDocument(string file)
         {
             var extension = Path.GetExtension(file);
@@ -139,6 +159,11 @@ namespace DocConversion
             }
         }
 
+        /// <summary>
+        /// Changes the document path based on user input.
+        /// </summary>
+        /// <param name="path">The original document path.</param>
+        /// <returns>The updated document path.</returns>
         private static string ChangeDocumentPath(string path)
         {
             var result = path;
