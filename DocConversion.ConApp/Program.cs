@@ -42,6 +42,8 @@
         /// <param name="args">The command-line arguments.</param>
         static void Main(string[] args)
         {
+            new DocConversionApp().Run(args);
+            return;
             if (args.Length > 0 && Directory.Exists(args[0]))
             {
                 SourcePath = args[0];
@@ -111,7 +113,7 @@
                         }
                         else if (select == 4)
                         {
-                            ConverterApp.RunApp();
+//                            ConverterApp.RunApp();
                         }
                     }
                 }

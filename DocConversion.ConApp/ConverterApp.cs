@@ -4,7 +4,7 @@ namespace DocConversion.ConApp
     /// <summary>
     /// Represents the application for converting documents to different formats.
     /// </summary>
-    internal partial class ConverterApp
+    internal partial class ConverterApp : ConsoleApplication
     {
         #region Class-Constructors
         /// <summary>
@@ -16,8 +16,8 @@ namespace DocConversion.ConApp
         static ConverterApp()
         {
             ClassConstructing();
-            DocumentPath = Program.SourcePath;
-            TargetPath = Program.TargetPath;
+            DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            TargetPath = Path.Combine(DocumentsPath, "Convert");// Program.TargetPath;
             ClassConstructed();
         }
         /// <summary>
@@ -37,127 +37,174 @@ namespace DocConversion.ConApp
         static partial void ClassConstructed();
         #endregion Class-Constructors
 
+        #region Instance-Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocConversionApp"/> class.
+        /// </summary>
+        public ConverterApp()
+        {
+            Constructing();
+            Constructed();
+        }
+        /// <summary>
+        /// This method is called during the construction of the object.
+        /// </summary>
+        partial void Constructing();
+        /// <summary>
+        /// This method is called when the object is constructed.
+        /// </summary>
+        partial void Constructed();
+        #endregion Instance-Constructors
+
         #region Properties
         /// <summary>
         /// Gets or sets the document path.
         /// </summary>
-        private static string DocumentPath { get; set; }
+        private static string DocumentsPath { get; set; }
         /// <summary>
         /// Gets or sets the target path.
         /// </summary>
         private static string TargetPath { get; set; }
+        /// <summary>
+        /// Gets or sets the current page index.
+        /// </summary>
+        private int PageIndex { get; set; } = 0;
+        /// <summary>
+        /// Gets or sets the page size for pagination.
+        /// </summary>
+        private int PageSize { get; set; } = 10;
+
         #endregion Properties
 
-        #region Methods
+        #region overrides
         /// <summary>
-        /// Prints the screen with the menu items and returns an array of MenuItem objects.
+        /// Creates an array of menu items for the application menu.
         /// </summary>
-        /// <returns>An array of MenuItem objects.</returns>
-        private static Models.MenuItem[] PrintScreen()
-        {
-            var saveForeColor = Console.ForegroundColor;
-            var menuItems = CreateMenuItems(DocumentPath, StaticLiterals.DocumentFileExtensions);
-
-            Console.Clear();
-            Console.ForegroundColor = ProgressBar.ForegroundColor;
-            PrintHeader(DocumentPath);
-            menuItems.ToList().ForEach(m => Console.WriteLine($"[{m.Key,2}] {m.Text}"));
-            PrintFooter();
-            Console.ForegroundColor = saveForeColor;
-            return menuItems;
-        }
-        /// <summary>
-        /// Runs the application and prompts the user to select various options related to code generation.
-        /// </summary>
-        public static void RunApp()
-        {
-            var running = true;
-            var input = default(string?);
-            var saveForeColor = Console.ForegroundColor;
-
-            do
-            {
-                var menuItems = PrintScreen();
-
-                input = Console.ReadLine()?.ToLower() ?? String.Empty;
-                foreach (var item in input.Split(','))
-                {
-                    menuItems.FirstOrDefault(m => m.Key.Equals(item))?.Action();
-                    running = item.Equals("x") ? false : running;
-                }
-                ProgressBar.Stop();
-            } while (running);
-        }
-
-        /// <summary>
-        /// Prints the header for the Template Code Formatter program.
-        /// </summary>
-        /// <param name="path">The source path of the code to be formatted.</param>
-        private static void PrintHeader(string path)
-        {
-            Console.Clear();
-            Console.ForegroundColor = ProgressBar.ForegroundColor;
-            Console.SetCursorPosition(0, 0);
-            Console.WriteLine("Document-Conversion-Converter");
-            Console.WriteLine("=============================");
-            Console.WriteLine();
-            Console.WriteLine($"Document path: {path}");
-            Console.WriteLine($"Target path:   {path}");
-            Console.WriteLine();
-        }
-        /// <summary>
-        /// Prints a footer message on the console.
-        /// </summary>
-        private static void PrintFooter()
-        {
-            Console.WriteLine();
-            Console.Write("Choose [n|n,n|x|X]: ");
-        }
-        /// <summary>
-        /// Creates an array of menu items based on the specified path and extensions.
-        /// </summary>
-        /// <param name="path">The path to search for files.</param>
-        /// <param name="extensions">The file extensions to include.</param>
-        /// <returns>An array of menu items.</returns>
-        private static Models.MenuItem[] CreateMenuItems(string path, string[] extensions)
+        /// <returns>An array of MenuItem objects representing the menu items.</returns>
+        protected override MenuItem[] CreateMenuItems()
         {
             var mnuIdx = 0;
-            var files = Program.GetFiles(path, "*.*", extensions);
-            var result = new List<Models.MenuItem>()
+            var menuItems = new List<MenuItem>
             {
-                new ()
+                new()
                 {
-                    Key = (++mnuIdx).ToString(),
-                    Text = "Change document path",
-                    Action = () => DocumentPath = ChangeDocumentPath(DocumentPath),
+                    Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Force", "Change force flag"),
+                    Action = (self) => ChangeForce(),
                 },
-                new ()
+                new()
                 {
-                    Key = (++mnuIdx).ToString(),
-                    Text = "Change target path",
-                    Action = () => TargetPath = ChangeTargetPath(TargetPath),
+                    Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Document path", "Change document path"),
+                    Action = (self) => DocumentsPath =  ChangePath("New document path: ", DocumentsPath),
+                },
+                new()
+                {
+                    Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Target path", "Change target path"),
+                    Action = (self) => TargetPath =  ChangePath("New target path: ", TargetPath),
+                },
+                new()
+                {
+                    Key = "---",
+                    Text = new string('-', 65),
+                    Action = (self) => { },
+                    ForegroundColor = ConsoleColor.DarkGreen,
                 },
             };
 
-            foreach (var file in files)
+            var files = GetFiles(DocumentsPath, "*.*", [".pdf", ".doc", ".docx"]).ToArray();
+
+            if (files.Length > 0)
             {
-                result.Add(new Models.MenuItem()
+                for (int i = PageIndex * PageSize; i < files.Length && i < (PageIndex + 1) * PageSize; i++)
                 {
-                    Key = (++mnuIdx).ToString(),
-                    Text = $"Convert {file.Replace(path, "...")}",
-                    Action = () => ConvertDocument(file, TargetPath),
+                    var file = files[i];
+                    var text = file;
+
+                    menuItems.Add(new MenuItem
+                    {
+                        Key = (++mnuIdx).ToString(),
+                        OptionalKey = "a", // it's for choose option all
+                        Text = ToLabelText("Convert", $"{file.Replace(DocumentsPath, string.Empty)}"),
+                        Action = (self) =>
+                        {
+                            var file = self.Params["file"]?.ToString() ?? string.Empty;
+                            
+                            ConvertDocument(file, TargetPath);
+                        },
+                        Params = new() { { "file", file } },
+                    });
+                }
+
+                var pageLabel = $"{PageIndex * PageSize}..{Math.Min((PageIndex + 1) * PageSize, files.Length)}/{files.Length}";
+
+                menuItems.Add(new()
+                {
+                    Key = "---",
+                    Text = ToLabelText(pageLabel, string.Empty, 20, ' '),
+                    Action = (self) => { },
+                    ForegroundColor = ConsoleColor.DarkGreen,
+                });
+                menuItems.Add(new()
+                {
+                    Key = "+",
+                    Text = ToLabelText("Next", "Load next path page"),
+                    Action = (self) =>
+                    {
+                        PageIndex = (PageIndex + 1) * PageSize <= files.Length ? PageIndex + 1 : PageIndex;
+                        PrintScreen();
+                    },
+                    ForegroundColor = ConsoleColor.DarkGreen,
+                });
+
+                menuItems.Add(new()
+                {
+                    Key = "-",
+                    Text = ToLabelText("Previous", "Load previous path page"),
+                    Action = (self) =>
+                    {
+                        PageIndex = Math.Max(0, PageIndex - 1);
+                        PrintScreen();
+                    },
+                    ForegroundColor = ConsoleColor.DarkGreen,
                 });
             }
-
-            result.Add(new Models.MenuItem()
-            {
-                Key = (++mnuIdx).ToString(),
-                Text = "x ... Exit",
-                Action = () => Console.WriteLine("Exiting..."),
-            });
-            return [.. result];
+            return [.. menuItems.Union(CreateExitMenuItems())];
         }
 
+        /// <summary>
+        /// Prints the header for the PlantUML application.
+        /// </summary>
+        /// <param name="sourcePath">The path of the solution.</param>
+        protected override void PrintHeader()
+        {
+            var count = 0;
+            var saveForeColor = ForegroundColor;
+
+            ForegroundColor = ConsoleColor.Green;
+
+            count = PrintLine("Document-Converter");
+            PrintLine('=', count);
+            PrintLine();
+            ForegroundColor = saveForeColor;
+            PrintLine($"Force flag:    {Force}");
+            PrintLine($"Document path: {DocumentsPath}");
+            PrintLine($"Target path:   {TargetPath}");
+            PrintLine();
+        }
+        /// <summary>
+        /// Prints the footer of the application.
+        /// </summary>
+        protected override void PrintFooter()
+        {
+            PrintLine();
+            Print("Choose [n|n,n|a...all|x|X]: ");
+        }
+        #endregion overrides
+
+
+        #region Methods
         /// <summary>
         /// Converts a document to a different format based on its file extension.
         /// </summary>
@@ -179,49 +226,21 @@ namespace DocConversion.ConApp
                     break;
             }
         }
-
         /// <summary>
-        /// Changes the document path based on user input.
+        /// Retrieves a collection of file paths that match the specified search pattern and extensions.
         /// </summary>
-        /// <param name="path">The original document path.</param>
-        /// <returns>The updated document path.</returns>
-        private static string ChangeDocumentPath(string path)
+        /// <param name="path">The directory to search in.</param>
+        /// <param name="searchPattern">The search pattern to match against the names of files in the directory.</param>
+        /// <param name="extensions">The file extensions to filter the search results. If no extensions are provided, all files will be included.</param>
+        /// <returns>A collection of file paths that match the search pattern and extensions.</returns>
+        public static IEnumerable<string> GetFiles(string path, string searchPattern, params string[] extensions)
         {
-            var result = path;
+            var result = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories)
+                                  .Where(f => extensions.Length != 0 == false
+                                           || extensions.Any(e => Path.GetExtension(f).Equals(e, StringComparison.CurrentCultureIgnoreCase)))
+                                  .OrderBy(i => i)
+                                  .ToArray();
 
-            Console.WriteLine();
-            Console.Write("Enter the path of the documents to be formatted: ");
-            var input = Console.ReadLine()!;
-            if (Directory.Exists(input))
-            {
-                result = input;
-            }
-            else
-            {
-                Console.WriteLine($"The path '{input}' does not exist.");
-            }
-            return result;
-        }
-        /// <summary>
-        /// Changes the target path for saving the conversion.
-        /// </summary>
-        /// <param name="path">The original path.</param>
-        /// <returns>The updated target path.</returns>
-        private static string ChangeTargetPath(string path)
-        {
-            var result = path;
-
-            Console.WriteLine();
-            Console.Write("Enter the target path for saving the conversion: ");
-            var input = Console.ReadLine()!;
-            if (Directory.Exists(input))
-            {
-                result = input;
-            }
-            else
-            {
-                Console.WriteLine($"The path '{input}' does not exist.");
-            }
             return result;
         }
         #endregion Methods
