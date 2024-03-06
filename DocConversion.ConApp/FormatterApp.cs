@@ -4,7 +4,7 @@ namespace DocConversion.ConApp
     /// <summary>
     /// Represents an application for formatting documents.
     /// </summary>
-    internal partial class FormatterApp
+    internal partial class FormatterApp : ConsoleApplication
     {
         #region Class-Constructors
         /// <summary>
@@ -16,7 +16,7 @@ namespace DocConversion.ConApp
         static FormatterApp()
         {
             ClassConstructing();
-            DocumentPath = Program.TargetPath;
+            DocumentsPath = Path.Combine(UserPath, "Downloads");// Program.DocumentsPath;);
             ClassConstructed();
         }
         /// <summary>
@@ -36,109 +36,175 @@ namespace DocConversion.ConApp
         static partial void ClassConstructed();
         #endregion Class-Constructors
 
+        #region Instance-Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatterApp"/> class.
+        /// </summary>
+        public FormatterApp()
+        {
+            Constructing();
+            Constructed();
+        }
+        /// <summary>
+        /// This method is called during the construction of the object.
+        /// </summary>
+        partial void Constructing();
+        /// <summary>
+        /// This method is called when the object is constructed.
+        /// </summary>
+        partial void Constructed();
+        #endregion Instance-Constructors
+
         #region Properties
         /// <summary>
-        /// Gets or sets the document path.
+        /// Gets or sets the documents path.
         /// </summary>
-        private static string DocumentPath { get; set; }
+        private static string DocumentsPath { get; set; }
+        /// <summary>
+        /// Gets or sets the current page index.
+        /// </summary>
+        private int PageIndex { get; set; } = 0;
+        /// <summary>
+        /// Gets or sets the page size for pagination.
+        /// </summary>
+        private int PageSize { get; set; } = 10;
         #endregion Properties
 
-        #region Methods
+        #region overrides
         /// <summary>
-        /// Prints the screen and returns an array of menu items.
+        /// Creates an array of menu items for the application menu.
         /// </summary>
-        /// <returns>An array of menu items.</returns>
-        private static Models.MenuItem[] PrintScreen()
-        {
-            var saveForeColor = Console.ForegroundColor;
-            var menuItems = CreateMenuItems(DocumentPath, [ ".md" ]);
-
-            Console.Clear();
-            Console.ForegroundColor = ProgressBar.ForegroundColor;
-            PrintHeader(DocumentPath);
-            menuItems.ToList().ForEach(m => Console.WriteLine($"[{m.Key, 2}] {m.Text}"));
-            PrintFooter();
-            Console.ForegroundColor = saveForeColor;
-            return menuItems;
-        }
-        /// <summary>
-        /// Runs the application and prompts the user to select various options related to code generation.
-        /// </summary>
-        public static void RunApp()
-        {
-            var running = true;
-            var input = default(string?);
-            var saveForeColor = Console.ForegroundColor;
-
-            do
-            {
-                var menuItems = PrintScreen();
-
-                input = Console.ReadLine()?.ToLower() ?? String.Empty;
-                foreach (var item in input.Split(','))
-                {
-                    menuItems.FirstOrDefault(m => m.Key.Equals(item))?.Action();
-                    running = item.Equals("x") ? false : running;
-                }
-                ProgressBar.Stop();
-            } while (running);
-        }
-
-        /// <summary>
-        /// Prints the header for the Template Code Formatter program.
-        /// </summary>
-        /// <param name="path">The source path of the code to be formatted.</param>
-        private static void PrintHeader(string path)
-        {
-            Console.Clear();
-            Console.ForegroundColor = ProgressBar.ForegroundColor;
-            Console.SetCursorPosition(0, 0);
-            Console.WriteLine("Document-Conversion-Formatter");
-            Console.WriteLine("=============================");
-            Console.WriteLine();
-            Console.WriteLine($"Document path: {path}");
-            Console.WriteLine();
-        }
-        /// <summary>
-        /// Prints a footer message on the console.
-        /// </summary>
-        private static void PrintFooter()
-        {
-            Console.WriteLine();
-            Console.Write("Choose [n|n,n|x|X]: ");
-        }
-        /// <summary>
-        /// Creates an array of menu items based on the specified path and file extensions.
-        /// </summary>
-        /// <param name="path">The path to search for files.</param>
-        /// <param name="extensions">The file extensions to filter the files.</param>
-        /// <returns>An array of MenuItem objects.</returns>
-        private static Models.MenuItem[] CreateMenuItems(string path, string[] extensions)
+        /// <returns>An array of MenuItem objects representing the menu items.</returns>
+        protected override MenuItem[] CreateMenuItems()
         {
             var mnuIdx = 0;
-            var files = Program.GetFiles(path, "*.*", extensions);
-            var result = new List<Models.MenuItem>()
+            var menuItems = new List<MenuItem>
             {
-                new ()
+                new()
                 {
-                    Key = (++mnuIdx).ToString(),
-                    Text = "Change document path",
-                    Action = () => DocumentPath = ChangeDocumentPath(DocumentPath),
+                    Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Force", "Change force flag"),
+                    Action = (self) => ChangeForce(),
+                },
+                new()
+                {
+                    Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Document path", "Change document path"),
+                    Action = (self) => DocumentsPath =  ChangePath("New document path: ", DocumentsPath),
+                },
+                new()
+                {
+                    Key = "---",
+                    Text = new string('-', 65),
+                    Action = (self) => { },
+                    ForegroundColor = ConsoleColor.DarkGreen,
                 },
             };
 
-            foreach (var file in files)
+            var files = Program.GetFiles(DocumentsPath, "*.*", [".md"]).ToArray();
+
+            if (files.Length > 0)
             {
-                result.Add(new Models.MenuItem()
+                for (int i = PageIndex * PageSize; i < files.Length && i < (PageIndex + 1) * PageSize; i++)
                 {
-                    Key = (++mnuIdx).ToString(),
-                    Text = $"Format {file.Replace(path, "...")}",
-                    Action = () => FormatDocument(file),
+                    var file = files[i];
+                    var text = file;
+
+                    menuItems.Add(new()
+                    {
+                        Key = (++mnuIdx).ToString(),
+                        OptionalKey = "a", // it's for choose option all
+                        Text = ToLabelText("Convert", $"{file.Replace(DocumentsPath, string.Empty)}"),
+                        Action = (self) =>
+                        {
+                            var file = self.Params["file"]?.ToString() ?? string.Empty;
+                            
+                            FormatDocument(file);
+                        },
+                        Params = new() { { "file", file } },
+                    });
+                }
+
+                var pageLabel = $"{PageIndex * PageSize}..{Math.Min((PageIndex + 1) * PageSize, files.Length)}/{files.Length}";
+
+                menuItems.Add(new()
+                {
+                    Key = "---",
+                    Text = new string('-', 65),
+                    Action = (self) => { },
+                    ForegroundColor = ConsoleColor.DarkGreen,
+                });
+                menuItems.Add(new()
+                {
+                    Key = "",
+                    Text = ToLabelText(pageLabel, string.Empty, 20, ' '),
+                    Action = (self) => { },
+                    ForegroundColor = ConsoleColor.DarkGreen,
+                });
+                menuItems.Add(new()
+                {
+                    Key = "---",
+                    Text = new string('-', 65),
+                    Action = (self) => { },
+                    ForegroundColor = ConsoleColor.DarkGreen,
+                });
+
+                menuItems.Add(new()
+                {
+                    Key = "+",
+                    Text = ToLabelText("Next", "Load next path page"),
+                    Action = (self) =>
+                    {
+                        PageIndex = (PageIndex + 1) * PageSize <= files.Length ? PageIndex + 1 : PageIndex;
+                        PrintScreen();
+                    },
+                    ForegroundColor = ConsoleColor.DarkGreen,
+                });
+
+                menuItems.Add(new()
+                {
+                    Key = "-",
+                    Text = ToLabelText("Previous", "Load previous path page"),
+                    Action = (self) =>
+                    {
+                        PageIndex = Math.Max(0, PageIndex - 1);
+                        PrintScreen();
+                    },
+                    ForegroundColor = ConsoleColor.DarkGreen,
                 });
             }
-            return [.. result];
+            return [.. menuItems.Union(CreateExitMenuItems())];
         }
 
+        /// <summary>
+        /// Prints the header for the PlantUML application.
+        /// </summary>
+        protected override void PrintHeader()
+        {
+            var count = 0;
+            var saveForeColor = ForegroundColor;
+
+            ForegroundColor = ConsoleColor.Green;
+
+            count = PrintLine("Document-Formatter");
+            PrintLine('=', count);
+            PrintLine();
+            ForegroundColor = saveForeColor;
+            PrintLine($"Force flag:    {Force}");
+            PrintLine($"Document path: {DocumentsPath}");
+            PrintLine();
+        }
+        /// <summary>
+        /// Prints the footer of the application.
+        /// </summary>
+        protected override void PrintFooter()
+        {
+            PrintLine();
+            Print("Choose [n|n,n|a...all|x|X]: ");
+        }
+        #endregion overrides
+
+        #region Methods
         /// <summary>
         /// Formats the specified document based on its file extension.
         /// </summary>
@@ -156,29 +222,6 @@ namespace DocConversion.ConApp
                     Console.WriteLine($"The file extension '{extension}' is not supported.");
                     break;
             }
-        }
-
-        /// <summary>
-        /// Changes the document path based on user input.
-        /// </summary>
-        /// <param name="path">The original document path.</param>
-        /// <returns>The updated document path.</returns>
-        private static string ChangeDocumentPath(string path)
-        {
-            var result = path;
-
-            Console.WriteLine();
-            Console.Write("Enter the path of the documents to be formatted: ");
-            var input = Console.ReadLine()!;
-            if (Directory.Exists(input))
-            {
-                result = input;
-            }
-            else
-            {
-                Console.WriteLine($"The path '{input}' does not exist.");
-            }
-            return result;
         }
         #endregion Methods
     }

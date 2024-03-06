@@ -16,7 +16,7 @@ namespace DocConversion.ConApp
         static ConverterApp()
         {
             ClassConstructing();
-            DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            DocumentsPath = Path.Combine(UserPath, "Downloads");// Program.DocumentsPath;);
             TargetPath = Path.Combine(DocumentsPath, "Convert");// Program.TargetPath;
             ClassConstructed();
         }
@@ -73,7 +73,6 @@ namespace DocConversion.ConApp
         /// Gets or sets the page size for pagination.
         /// </summary>
         private int PageSize { get; set; } = 10;
-
         #endregion Properties
 
         #region overrides
@@ -113,7 +112,7 @@ namespace DocConversion.ConApp
                 },
             };
 
-            var files = GetFiles(DocumentsPath, "*.*", [".pdf", ".doc", ".docx"]).ToArray();
+            var files = Program.GetFiles(DocumentsPath, "*.*", [".pdf", ".doc", ".docx"]).ToArray();
 
             if (files.Length > 0)
             {
@@ -142,10 +141,25 @@ namespace DocConversion.ConApp
                 menuItems.Add(new()
                 {
                     Key = "---",
+                    Text = new string('-', 65),
+                    Action = (self) => { },
+                    ForegroundColor = ConsoleColor.DarkGreen,
+                });
+                menuItems.Add(new()
+                {
+                    Key = "",
                     Text = ToLabelText(pageLabel, string.Empty, 20, ' '),
                     Action = (self) => { },
                     ForegroundColor = ConsoleColor.DarkGreen,
                 });
+                menuItems.Add(new()
+                {
+                    Key = "---",
+                    Text = new string('-', 65),
+                    Action = (self) => { },
+                    ForegroundColor = ConsoleColor.DarkGreen,
+                });
+
                 menuItems.Add(new()
                 {
                     Key = "+",
@@ -176,7 +190,6 @@ namespace DocConversion.ConApp
         /// <summary>
         /// Prints the header for the PlantUML application.
         /// </summary>
-        /// <param name="sourcePath">The path of the solution.</param>
         protected override void PrintHeader()
         {
             var count = 0;
@@ -225,23 +238,6 @@ namespace DocConversion.ConApp
                     Console.WriteLine($"The file extension '{extension}' is not supported.");
                     break;
             }
-        }
-        /// <summary>
-        /// Retrieves a collection of file paths that match the specified search pattern and extensions.
-        /// </summary>
-        /// <param name="path">The directory to search in.</param>
-        /// <param name="searchPattern">The search pattern to match against the names of files in the directory.</param>
-        /// <param name="extensions">The file extensions to filter the search results. If no extensions are provided, all files will be included.</param>
-        /// <returns>A collection of file paths that match the search pattern and extensions.</returns>
-        public static IEnumerable<string> GetFiles(string path, string searchPattern, params string[] extensions)
-        {
-            var result = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories)
-                                  .Where(f => extensions.Length != 0 == false
-                                           || extensions.Any(e => Path.GetExtension(f).Equals(e, StringComparison.CurrentCultureIgnoreCase)))
-                                  .OrderBy(i => i)
-                                  .ToArray();
-
-            return result;
         }
         #endregion Methods
     }

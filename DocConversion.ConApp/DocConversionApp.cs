@@ -93,7 +93,7 @@
                 {
                     Key = $"{++mnuIdx}",
                     Text = ToLabelText("Format", "Format markdown documents"),
-                    Action = (self) => { },
+                    Action = (self) => { new FormatterApp().Run([]); },
                 },
             };
 
