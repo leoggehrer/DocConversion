@@ -44,14 +44,6 @@
 
         #region app properties
         private string DocumentsPath { get; set; }
-        /// <summary>
-        /// Gets or sets the current page index.
-        /// </summary>
-        private int PageIndex { get; set; } = 0;
-        /// <summary>
-        /// Gets or sets the page size for pagination.
-        /// </summary>
-        private int PageSize { get; set; } = 10;
         #endregion app properties
 
         #region overrides

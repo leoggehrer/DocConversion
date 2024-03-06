@@ -65,14 +65,6 @@ namespace DocConversion.ConApp
         /// Gets or sets the target path.
         /// </summary>
         private static string TargetPath { get; set; }
-        /// <summary>
-        /// Gets or sets the current page index.
-        /// </summary>
-        private int PageIndex { get; set; } = 0;
-        /// <summary>
-        /// Gets or sets the page size for pagination.
-        /// </summary>
-        private int PageSize { get; set; } = 10;
         #endregion Properties
 
         #region overrides
@@ -114,76 +106,17 @@ namespace DocConversion.ConApp
 
             var files = Program.GetFiles(DocumentsPath, "*.*", [".pdf", ".doc", ".docx"]).ToArray();
 
-            if (files.Length > 0)
+            menuItems.AddRange(CreatePageMenuItems(ref mnuIdx, files, (item, menuItem) =>
             {
-                for (int i = PageIndex * PageSize; i < files.Length && i < (PageIndex + 1) * PageSize; i++)
+                menuItem.Text = ToLabelText("Convert", $"{item.Replace(DocumentsPath, string.Empty)}");
+                menuItem.Action = (self) =>
                 {
-                    var file = files[i];
-                    var text = file;
+                    var file = self.Params["file"]?.ToString() ?? string.Empty;
 
-                    menuItems.Add(new MenuItem
-                    {
-                        Key = (++mnuIdx).ToString(),
-                        OptionalKey = "a", // it's for choose option all
-                        Text = ToLabelText("Convert", $"{file.Replace(DocumentsPath, string.Empty)}"),
-                        Action = (self) =>
-                        {
-                            var file = self.Params["file"]?.ToString() ?? string.Empty;
-                            
-                            ConvertDocument(file, TargetPath);
-                        },
-                        Params = new() { { "file", file } },
-                    });
-                }
-
-                var pageLabel = $"{PageIndex * PageSize}..{Math.Min((PageIndex + 1) * PageSize, files.Length)}/{files.Length}";
-
-                menuItems.Add(new()
-                {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                });
-                menuItems.Add(new()
-                {
-                    Key = "",
-                    Text = ToLabelText(pageLabel, string.Empty, 20, ' '),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                });
-                menuItems.Add(new()
-                {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                });
-
-                menuItems.Add(new()
-                {
-                    Key = "+",
-                    Text = ToLabelText("Next", "Load next path page"),
-                    Action = (self) =>
-                    {
-                        PageIndex = (PageIndex + 1) * PageSize <= files.Length ? PageIndex + 1 : PageIndex;
-                        PrintScreen();
-                    },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                });
-
-                menuItems.Add(new()
-                {
-                    Key = "-",
-                    Text = ToLabelText("Previous", "Load previous path page"),
-                    Action = (self) =>
-                    {
-                        PageIndex = Math.Max(0, PageIndex - 1);
-                        PrintScreen();
-                    },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                });
-            }
+                    ConvertDocument(item, TargetPath);
+                };
+                menuItem.Params = new() { { "file", item } };
+            }));
             return [.. menuItems.Union(CreateExitMenuItems())];
         }
 
@@ -215,7 +148,6 @@ namespace DocConversion.ConApp
             Print("Choose [n|n,n|a...all|x|X]: ");
         }
         #endregion overrides
-
 
         #region Methods
         /// <summary>
