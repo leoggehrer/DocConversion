@@ -6,7 +6,7 @@ namespace DocConversion.ConApp
     /// <summary>
     /// Represents an application for formatting documents.
     /// </summary>
-    internal partial class FormatterApp : ConsoleApplication
+    internal partial class FormatterApp : CommonTool.ConsoleApplication
     {
         #region Class-Constructors
         /// <summary>

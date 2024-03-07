@@ -4,7 +4,7 @@ namespace DocConversion.ConApp
     /// <summary>
     /// Represents the application for converting documents to different formats.
     /// </summary>
-    internal partial class ConverterApp : ConsoleApplication
+    internal partial class ConverterApp : CommonTool.ConsoleApplication
     {
         #region Class-Constructors
         /// <summary>

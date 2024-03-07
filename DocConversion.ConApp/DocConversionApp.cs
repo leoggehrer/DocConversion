@@ -1,6 +1,6 @@
 ﻿namespace DocConversion.ConApp
 {
-    public partial class DocConversionApp : ConsoleApplication
+    public partial class DocConversionApp : CommonTool.ConsoleApplication
     {
         #region Class-Constructors
         /// <summary>

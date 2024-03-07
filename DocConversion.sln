@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocConversion.ConApp", "Doc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocConversion.Logic", "DocConversion.Logic\DocConversion.Logic.csproj", "{D4FC9CFA-EF33-4CCA-807B-E85300422F25}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTool", "..\CommonTool\CommonTool\CommonTool.csproj", "{C5C4F380-5CFF-4F3C-97B2-C9AFE1F56052}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D4FC9CFA-EF33-4CCA-807B-E85300422F25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4FC9CFA-EF33-4CCA-807B-E85300422F25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4FC9CFA-EF33-4CCA-807B-E85300422F25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5C4F380-5CFF-4F3C-97B2-C9AFE1F56052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5C4F380-5CFF-4F3C-97B2-C9AFE1F56052}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5C4F380-5CFF-4F3C-97B2-C9AFE1F56052}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5C4F380-5CFF-4F3C-97B2-C9AFE1F56052}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

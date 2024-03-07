@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DocConversion.Logic\DocConversion.Logic.csproj" />
+    <ProjectReference Include="..\..\CommonTool\CommonTool\CommonTool.csproj" />
   </ItemGroup>
 
 </Project>
