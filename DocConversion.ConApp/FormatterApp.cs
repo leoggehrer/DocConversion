@@ -76,6 +76,13 @@ namespace DocConversion.ConApp
             {
                 new()
                 {
+                    Key = "---",
+                    Text = new string('-', 65),
+                    Action = (self) => { },
+                    ForegroundColor = ConsoleColor.DarkGreen,
+                },
+                new()
+                {
                     Key = $"{++mnuIdx}",
                     Text = ToLabelText("Force", "Change force flag"),
                     Action = (self) => ChangeForce(),
