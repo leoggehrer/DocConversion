@@ -135,14 +135,6 @@ namespace DocConversion.ConApp
             PrintLine($"Document path: {DocumentsPath}");
             PrintLine();
         }
-        /// <summary>
-        /// Prints the footer of the application.
-        /// </summary>
-        protected override void PrintFooter()
-        {
-            PrintLine();
-            Print("Choose [n|n,n|a...all|x|X]: ");
-        }
         #endregion overrides
 
         #region Methods

@@ -73,7 +73,7 @@
                 {
                     Key = $"{++mnuIdx}",
                     Text = ToLabelText("Path", "Change source path"),
-                    Action = (self) => ChangeSourcePath(),
+                    Action = (self) => SourcePath = SelectOrChangeToSubPath(SourcePath, SourcePath),
                 },
                 new()
                 {
@@ -93,6 +93,12 @@
                     Key = $"{++mnuIdx}",
                     Text = ToLabelText("Format", "Format markdown documents"),
                     Action = (self) => { new FormatterApp().Run([]); },
+                },
+                new()
+                {
+                    Key = $"{++mnuIdx}",
+                    Text = ToLabelText("ReadMe", "Creates ReadMe.md documents"),
+                    Action = (self) => { new ReadMeCreatorApp().Run([]); },
                 },
             };
 
@@ -115,15 +121,8 @@
             PrintLine();
             ForegroundColor = saveForeColor;
             PrintLine($"Force flag:     {Force}");
+            PrintLine($"Source path:    {SourcePath}");
             PrintLine();
-        }
-        /// <summary>
-        /// Prints the footer of the application.
-        /// </summary>
-        protected override void PrintFooter()
-        {
-            PrintLine();
-            Print("Choose [n|n,n|a...all|x|X]: ");
         }
         #endregion overrides
 

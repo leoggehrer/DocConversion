@@ -120,7 +120,7 @@ namespace DocConversion.ConApp
                 {
                     var file = self.Params["file"]?.ToString() ?? string.Empty;
 
-                    ConvertDocument(item, TargetPath);
+                    ConvertDocument(file, TargetPath);
                 };
                 menuItem.Params = new() { { "file", item } };
             }));
@@ -145,14 +145,6 @@ namespace DocConversion.ConApp
             PrintLine($"Document path: {DocumentsPath}");
             PrintLine($"Target path:   {TargetPath}");
             PrintLine();
-        }
-        /// <summary>
-        /// Prints the footer of the application.
-        /// </summary>
-        protected override void PrintFooter()
-        {
-            PrintLine();
-            Print("Choose [n|n,n|a...all|x|X]: ");
         }
         #endregion overrides
 
