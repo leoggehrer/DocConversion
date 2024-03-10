@@ -91,7 +91,7 @@ namespace DocConversion.ConApp
                 {
                     Key = $"{++mnuIdx}",
                     Text = ToLabelText("Document path", "Change document path"),
-                    Action = (self) => DocumentsPath =  ChangePath("New document path: ", DocumentsPath),
+                    Action = (self) => DocumentsPath =  SelectOrChangeToSubPath(DocumentsPath, SourcePath),
                 },
                 new()
                 {

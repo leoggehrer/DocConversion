@@ -30,11 +30,10 @@ namespace DocConversion.Logic
             }
             else if (File.Exists(sourceFile))
             {
-                if (Path.Exists(conversionPath))
+                if (Path.Exists(conversionPath) == false)
                 {
-                    Directory.Delete(conversionPath, true);
+                    Directory.CreateDirectory(conversionPath);
                 }
-                Directory.CreateDirectory(conversionPath);
 
                 try
                 {
@@ -46,7 +45,6 @@ namespace DocConversion.Logic
                 {
                     Console.WriteLine(ex.Message);
                 }
-
                 CleaningAndFormatting(conversionFile);
             }
         }

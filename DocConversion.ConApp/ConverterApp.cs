@@ -1,4 +1,6 @@
 ﻿
+using CommonTool.Extensions;
+
 namespace DocConversion.ConApp
 {
     /// <summary>
@@ -16,8 +18,9 @@ namespace DocConversion.ConApp
         static ConverterApp()
         {
             ClassConstructing();
+            ConversionFileName = "ReadMe.md";
+            ConversionPath = Path.Combine(UserPath, "Convert");// Program.TargetPath;
             DocumentsPath = Path.Combine(UserPath, "Downloads");// Program.DocumentsPath;);
-            TargetPath = Path.Combine(DocumentsPath, "Convert");// Program.TargetPath;
             ClassConstructed();
         }
         /// <summary>
@@ -57,6 +60,7 @@ namespace DocConversion.ConApp
         #endregion Instance-Constructors
 
         #region Properties
+        public static string ConversionFileName { get; set; }
         /// <summary>
         /// Gets or sets the document path.
         /// </summary>
@@ -64,7 +68,7 @@ namespace DocConversion.ConApp
         /// <summary>
         /// Gets or sets the target path.
         /// </summary>
-        private static string TargetPath { get; set; }
+        private static string ConversionPath { get; set; }
         #endregion Properties
 
         #region overrides
@@ -94,13 +98,19 @@ namespace DocConversion.ConApp
                 {
                     Key = $"{++mnuIdx}",
                     Text = ToLabelText("Document path", "Change document path"),
-                    Action = (self) => DocumentsPath =  ChangePath("New document path: ", DocumentsPath),
+                    Action = (self) => DocumentsPath =  SelectOrChangeToSubPath(DocumentsPath, SourcePath),
                 },
                 new()
                 {
                     Key = $"{++mnuIdx}",
-                    Text = ToLabelText("Target path", "Change target path"),
-                    Action = (self) => TargetPath =  ChangePath("New target path: ", TargetPath),
+                    Text = ToLabelText("Conversion path", "Change conversion path"),
+                    Action = (self) => ConversionPath =  SelectOrChangeToSubPath(ConversionPath, SourcePath),
+                },
+                new()
+                {
+                    Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Change file name", "Change conversion file name"),
+                    Action = (self) => ConversionFileName = ChangeConversionFileName(),
                 },
                 new()
                 {
@@ -120,7 +130,7 @@ namespace DocConversion.ConApp
                 {
                     var file = self.Params["file"]?.ToString() ?? string.Empty;
 
-                    ConvertDocument(file, TargetPath);
+                    ConvertDocument(file, ConversionPath, ConversionFileName);
                 };
                 menuItem.Params = new() { { "file", item } };
             }));
@@ -141,20 +151,35 @@ namespace DocConversion.ConApp
             PrintLine('=', count);
             PrintLine();
             ForegroundColor = saveForeColor;
-            PrintLine($"Force flag:    {Force}");
-            PrintLine($"Document path: {DocumentsPath}");
-            PrintLine($"Target path:   {TargetPath}");
+            PrintLine($"Force flag:           {Force}");
+            PrintLine($"Document path:        {DocumentsPath}");
+            PrintLine($"Conversiom path:      {ConversionPath}");
+            PrintLine($"Conversion file name: {ConversionFileName}");
             PrintLine();
         }
         #endregion overrides
 
         #region Methods
         /// <summary>
-        /// Converts a document to a different format based on its file extension.
+        /// Changes the conversion file name based on user input.
         /// </summary>
-        /// <param name="file">The path of the document file to be converted.</param>
-        /// <param name="targetPath">The path where the converted document will be saved.</param>
-        private static void ConvertDocument(string file, string targetPath)
+        /// <returns>The new conversion file name.</returns>
+        private static string ChangeConversionFileName()
+        {
+            PrintLine();
+            Print("Type new conversion file name: ");
+
+            var result = ReadLine();
+
+            return result.HasContent() ? result : ConversionFileName;
+        }
+        /// <summary>
+        /// Converts a document to a specified format.
+        /// </summary>
+        /// <param name="file">The path of the document file to convert.</param>
+        /// <param name="targetPath">The target path where the converted document will be saved.</param>
+        /// <param name="conversionFileName">The name of the converted document file.</param>
+        private static void ConvertDocument(string file, string targetPath, string conversionFileName)
         {
             var extension = Path.GetExtension(file);
 
@@ -163,7 +188,7 @@ namespace DocConversion.ConApp
                 case ".pdf":
                 case ".doc":
                 case ".docx":
-                    Logic.MarkdownConverter.ConversionTo(file, targetPath, "ReadMe.md");
+                    Logic.MarkdownConverter.ConversionTo(file, targetPath, conversionFileName);
                     break;
                 default:
                     Console.WriteLine($"The file extension '{extension}' is not supported.");
