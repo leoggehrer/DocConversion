@@ -81,13 +81,7 @@ namespace DocConversion.ConApp
             var mnuIdx = 0;
             var menuItems = new List<MenuItem>
             {
-               new()
-               {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-               },
+               CreateMenuSeparator(),
                new()
                {
                     Key = $"{++mnuIdx}",
@@ -112,13 +106,7 @@ namespace DocConversion.ConApp
                     Text = ToLabelText("Change file name", "Change conversion file name"),
                     Action = (self) => ConversionFileName = ChangeConversionFileName(),
                 },
-                new()
-                {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                },
+                CreateMenuSeparator(),
             };
 
             var files = Program.GetFiles(DocumentsPath, "*.*", [".pdf", ".doc", ".docx"]).ToArray();

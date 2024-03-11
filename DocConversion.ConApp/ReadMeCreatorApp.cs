@@ -13,6 +13,7 @@ namespace DocConversion.ConApp
         static ReadMeCreatorApp()
         {
             ClassConstructing();
+            DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             ClassConstructed();
         }
         /// <summary>
@@ -32,7 +33,6 @@ namespace DocConversion.ConApp
         public ReadMeCreatorApp()
         {
             Constructing();
-            DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             Constructed();
         }
         /// <summary>
@@ -49,7 +49,7 @@ namespace DocConversion.ConApp
         /// <summary>
         /// Gets or sets the path to the documents.
         /// </summary>
-        private string DocumentsPath { get; set; }
+        private static string DocumentsPath { get; set; }
         #endregion app properties
 
         #region overrides
@@ -80,13 +80,7 @@ namespace DocConversion.ConApp
             var mnuIdx = 0;
             var menuItems = new List<MenuItem>
             {
-                new()
-                {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                },
+                CreateMenuSeparator(),
                 new()
                 {
                     Key = $"{++mnuIdx}",
@@ -99,13 +93,7 @@ namespace DocConversion.ConApp
                     Text = ToLabelText("Path", "Change source path"),
                     Action = (self) => DocumentsPath = SelectOrChangeToSubPath(DocumentsPath, [ SourcePath ]),
                 },
-                new()
-                {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                },
+                CreateMenuSeparator(),
             };
             var files = Program.GetFiles(DocumentsPath, "rm_creator.md", [".md"]).ToArray();
 
@@ -133,7 +121,7 @@ namespace DocConversion.ConApp
         /// <param name="force">A boolean value indicating whether to force overwrite an existing ReadMe file.</param>
         private void CreateReadMe(string filePath, bool force)
         {
-            var path = Path.GetDirectoryName(filePath);
+            var path = Path.GetDirectoryName(filePath)!;
             var readMeFilePath = Path.Combine(path!, "ReadMe.md");
             var lines = File.ReadAllLines(filePath);
             var result = new List<string>();
@@ -144,17 +132,23 @@ namespace DocConversion.ConApp
                 {
                     var includeFilePath = ConvertFilePath(line.Betweenstring("(", ")"));
                     var includeFileLevel = line.Betweenstring(")(", ")");
+                    var includePath = Path.GetDirectoryName(includeFilePath);
+
+                    if (includePath.IsNullOrEmpty())
+                    {
+                        includeFilePath = Path.Combine(path, includeFilePath);
+                    }
 
                     int.TryParse(includeFileLevel, out int level);
 
-                    result.AddRange(IncludeReadMe(path!, includeFilePath, level));
+                    result.AddRange(IncludeReadMe(path, includeFilePath, level));
                 }
                 else if (line.StartsWith("[insert_acinfo]", StringComparison.CurrentCultureIgnoreCase))
                 {
                     var includeUrl = ConvertFilePath(line.Betweenstring("(", ")"));
                     var includeFilePath = line.Betweenstring(")(", ")");
 
-                    result.AddRange(IncludeActivityDiagrams(path!, includeFilePath, includeUrl, 3));
+                    result.AddRange(IncludeActivityDiagrams(path, includeFilePath, includeUrl, 3));
                 }
                 else
                 {

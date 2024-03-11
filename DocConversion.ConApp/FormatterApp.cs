@@ -74,13 +74,7 @@ namespace DocConversion.ConApp
             var mnuIdx = 0;
             var menuItems = new List<MenuItem>
             {
-                new()
-                {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                },
+                CreateMenuSeparator(),
                 new()
                 {
                     Key = $"{++mnuIdx}",
@@ -93,13 +87,7 @@ namespace DocConversion.ConApp
                     Text = ToLabelText("Document path", "Change document path"),
                     Action = (self) => DocumentsPath =  SelectOrChangeToSubPath(DocumentsPath, SourcePath),
                 },
-                new()
-                {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                },
+                CreateMenuSeparator(),
             };
 
             var files = Program.GetFiles(DocumentsPath, "*.*", [".md"]).ToArray();

@@ -10,6 +10,7 @@
         static DocConversionApp()
         {
             ClassConstructing();
+            DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             ClassConstructed();
         }
         /// <summary>
@@ -29,7 +30,6 @@
         public DocConversionApp()
         {
             Constructing();
-            DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             Constructed();
         }
         /// <summary>
@@ -43,7 +43,7 @@
         #endregion Instance-Constructors
 
         #region app properties
-        private string DocumentsPath { get; set; }
+        private static string DocumentsPath { get; set; }
         #endregion app properties
 
         #region overrides
@@ -56,13 +56,7 @@
             var mnuIdx = 0;
             var menuItems = new List<MenuItem>
             {
-                new()
-                {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                },
+                CreateMenuSeparator(),
                 new()
                 {
                     Key = $"{++mnuIdx}",
@@ -75,13 +69,7 @@
                     Text = ToLabelText("Path", "Change source path"),
                     Action = (self) => SourcePath = SelectOrChangeToSubPath(SourcePath, SourcePath),
                 },
-                new()
-                {
-                    Key = "---",
-                    Text = new string('-', 65),
-                    Action = (self) => { },
-                    ForegroundColor = ConsoleColor.DarkGreen,
-                },
+                CreateMenuSeparator(),
                 new()
                 {
                     Key = $"{++mnuIdx}",
