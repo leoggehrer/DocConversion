@@ -154,6 +154,7 @@ namespace DocConversion.Logic
             if (table.Length > 0)
             {
                 var columnWidths = new int[table[0].Length];
+
                 for (var i = 0; i < table[0].Length; i++)
                 {
                     columnWidths[i] = table.Max(r => r[i].Length);
@@ -162,7 +163,7 @@ namespace DocConversion.Logic
                 {
                     var line = "|";
 
-                    for (var i = 0; i < row.Length; i++)
+                    for (var i = 0; i < row.Length && i < columnWidths.Length; i++)
                     {
                         line += $"{row[i].PadRight(columnWidths[i])}|";
                     }
