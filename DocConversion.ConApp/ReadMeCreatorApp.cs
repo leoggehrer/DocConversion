@@ -128,7 +128,7 @@ namespace DocConversion.ConApp
 
             foreach (var line in lines)
             {
-                if (line.StartsWith("[insert_readme]", StringComparison.CurrentCultureIgnoreCase))
+                if (line.StartsWith("[insert_file]", StringComparison.CurrentCultureIgnoreCase))
                 {
                     var includeFilePath = ConvertFilePath(line.Betweenstring("(", ")"));
                     var includeFileLevel = line.Betweenstring(")(", ")");
