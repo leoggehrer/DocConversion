@@ -6,6 +6,7 @@ namespace DocConversion.Logic
 {
     public partial class MarkdownConverter
     {
+        public static string DocSubPath { get; set; } = "docs";
         /// <summary>
         /// Converts a document to Markdown format and saves it to the specified target path and file name.
         /// </summary>
@@ -17,7 +18,7 @@ namespace DocConversion.Logic
             var sourceExtension = Path.GetExtension(sourceFile);
             var targetExtension = Path.GetExtension(targetFileName);
             var sourceFileNameWithoutExtension= Path.GetFileNameWithoutExtension(sourceFile);
-            var conversionPath = Path.Combine(targetPath, sourceFileNameWithoutExtension);
+            var conversionPath = Path.Combine(targetPath, sourceFileNameWithoutExtension, DocSubPath);
             var conversionFile = Path.Combine(conversionPath, targetFileName);
 
             if (File.Exists(conversionFile) && targetExtension.Equals(".md", StringComparison.CurrentCultureIgnoreCase))
