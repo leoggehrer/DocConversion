@@ -6,6 +6,9 @@ namespace DocConversion.Logic
 {
     public partial class MarkdownConverter
     {
+        /// <summary>
+        /// Gets or sets the subpath for the documents.
+        /// </summary>
         public static string DocSubPath { get; set; } = "docs";
         /// <summary>
         /// Converts a document to Markdown format and saves it to the specified target path and file name.

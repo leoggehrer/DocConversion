@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Aspose.Words.Vba;
 using CommonTool.Extensions;
 
 namespace DocConversion.ConApp
@@ -13,7 +14,7 @@ namespace DocConversion.ConApp
         static ReadMeCreatorApp()
         {
             ClassConstructing();
-            DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            DocumentsPath = SourcePath;
             ClassConstructed();
         }
         /// <summary>
@@ -172,7 +173,7 @@ namespace DocConversion.ConApp
         {
             var result = new List<string>();
             var sourcePath = Path.GetDirectoryName(filePath)!;
-            var lines = File.ReadAllLines(filePath);
+            var lines = File.Exists(filePath) ? File.ReadAllLines(filePath) : [];
 
             foreach (var line in lines)
             {
@@ -246,6 +247,27 @@ namespace DocConversion.ConApp
         /// <param name="filePath">The file path to convert.</param>
         /// <returns>The converted file path.</returns>
         private static string ConvertFilePath(string filePath) => filePath.Replace('/', Path.DirectorySeparatorChar);
+        /// <summary>
+        /// Converts a relative path to an absolute path based on the current path.
+        /// </summary>
+        /// <param name="currentPath">The current path.</param>
+        /// <param name="convertPath">The path to convert.</param>
+        /// <returns>The absolute path.</returns>
+        private static string ConvertToAbsolutePath(string currentPath, string convertPath) 
+        {
+            var result = convertPath;
+
+            if (Path.IsPathRooted(convertPath) == false)
+            {
+                var convertData = convertPath.Split(Path.DirectorySeparatorChar) ?? [];
+                var upLevel = convertData.Count(x => x.Replace(".", string.Empty).IsNullOrEmpty());
+                var currentData = currentPath.Split(Path.DirectorySeparatorChar) ?? [];
+
+                result = string.Join(Path.DirectorySeparatorChar, currentData[..^upLevel]);
+                result = Path.Combine(result, string.Join(Path.DirectorySeparatorChar, convertData.Skip(upLevel)));
+            }
+            return result;
+        }
         #endregion app-methods
     }
 }
