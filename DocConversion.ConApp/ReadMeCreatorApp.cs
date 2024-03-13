@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Aspose.Words.Vba;
 using CommonTool.Extensions;
 
 namespace DocConversion.ConApp
@@ -96,7 +95,7 @@ namespace DocConversion.ConApp
                 },
                 CreateMenuSeparator(),
             };
-            var files = Program.GetFiles(DocumentsPath, "rm_creator.md", [".md"]).ToArray();
+            var files = Program.GetFiles(DocumentsPath, "rm_creator*.md", [ ".md", "*.txt" ]).ToArray();
 
             menuItems.AddRange(CreatePageMenuItems(ref mnuIdx, files, (item, menuItem) =>
             {
@@ -116,16 +115,29 @@ namespace DocConversion.ConApp
 
         #region app-methods
         /// <summary>
-        /// Creates a ReadMe file based on the provided file path, with optional force overwrite.
+        /// Creates a ReadMe file based on the provided file path.
         /// </summary>
-        /// <param name="filePath">The path of the file to be used as a template for the ReadMe file.</param>
-        /// <param name="force">A boolean value indicating whether to force overwrite an existing ReadMe file.</param>
+        /// <param name="filePath">The path of the file to create a ReadMe from.</param>
+        /// <param name="force">A flag indicating whether to overwrite an existing ReadMe file.</param>
         private void CreateReadMe(string filePath, bool force)
         {
-            var path = Path.GetDirectoryName(filePath)!;
-            var readMeFilePath = Path.Combine(path!, "ReadMe.md");
-            var lines = File.ReadAllLines(filePath);
+            var fileName = Path.GetFileName(filePath);
+            var targetFileName = fileName.Replace("rm_creator", "ReadMe");
+
+            CreateReadMe(filePath, targetFileName, force);
+        }
+        /// <summary>
+        /// Creates a README file by processing the contents of a given file and replacing specific placeholders with actual content.
+        /// </summary>
+        /// <param name="filePath">The path of the file to be processed.</param>
+        /// <param name="targetFileName">The name of the target README file to be created.</param>
+        /// <param name="force">A flag indicating whether to overwrite the target file if it already exists.</param>
+        private void CreateReadMe(string filePath, string targetFileName, bool force)
+        {
             var result = new List<string>();
+            var path = Path.GetDirectoryName(filePath)!;
+            var targetFilePath = Path.Combine(path!, targetFileName);
+            var lines = File.Exists(filePath) ? File.ReadAllLines(filePath) : [];
 
             foreach (var line in lines)
             {
@@ -133,20 +145,21 @@ namespace DocConversion.ConApp
                 {
                     var includeFilePath = ConvertFilePath(line.Betweenstring("(", ")"));
                     var includeFileLevel = line.Betweenstring(")(", ")");
-                    var includePath = Path.GetDirectoryName(includeFilePath);
+                    var absoluteFilePath = ConvertToAbsolutePath(path, includeFilePath);
+                    var absolutePath = Path.GetDirectoryName(absoluteFilePath);
 
-                    if (includePath.IsNullOrEmpty())
+                    if (absolutePath.IsNullOrEmpty())
                     {
-                        includeFilePath = Path.Combine(path, includeFilePath);
+                        absoluteFilePath = Path.Combine(path, absoluteFilePath);
                     }
 
                     int.TryParse(includeFileLevel, out int level);
 
-                    result.AddRange(IncludeReadMe(path, includeFilePath, level));
+                    result.AddRange(IncludeReadMe(path, absoluteFilePath, level));
                 }
                 else if (line.StartsWith("[insert_acinfo]", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    var includeUrl = ConvertFilePath(line.Betweenstring("(", ")"));
+                    var includeUrl = line.Betweenstring("(", ")");
                     var includeFilePath = line.Betweenstring(")(", ")");
 
                     result.AddRange(IncludeActivityDiagrams(path, includeFilePath, includeUrl, 3));
@@ -157,9 +170,9 @@ namespace DocConversion.ConApp
                 }
             }
 
-            if (File.Exists(readMeFilePath) == false || force)
+            if (File.Exists(targetFilePath) == false || force)
             {
-                File.WriteAllLines(readMeFilePath, result);
+                File.WriteAllLines(targetFilePath, result);
             }
         }
         /// <summary>
@@ -180,14 +193,14 @@ namespace DocConversion.ConApp
                 if (line.Trim().StartsWith("!["))
                 {
                     var imageFilePath = ConvertFilePath(line.Betweenstring("(", ")"));
-                    var sourceFilePath = Path.Combine(sourcePath, imageFilePath);
-                    var destinationFilePath = Path.Combine(path, imageFilePath);
+                    var sourceFilePath = ConvertToAbsolutePath(sourcePath, imageFilePath);
+                    var destinationFilePath = ConvertToAbsolutePath(path, imageFilePath);
 
                     try
                     {
                         File.Copy(sourceFilePath, destinationFilePath, true);
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine($"Error in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}");   // ignore
                     }
@@ -253,7 +266,7 @@ namespace DocConversion.ConApp
         /// <param name="currentPath">The current path.</param>
         /// <param name="convertPath">The path to convert.</param>
         /// <returns>The absolute path.</returns>
-        private static string ConvertToAbsolutePath(string currentPath, string convertPath) 
+        private static string ConvertToAbsolutePath(string currentPath, string convertPath)
         {
             var result = convertPath;
 
