@@ -217,7 +217,7 @@ namespace DocConversion.ConApp
             var title = string.Empty;
             var result = new List<string>();
             var filePath = Path.Combine(path, subFilePath);
-            var lines = File.ReadAllLines(filePath);
+            var lines = File.Exists(filePath) ? File.ReadAllLines(filePath) : [];
 
             foreach (var line in lines)
             {
