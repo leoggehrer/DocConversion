@@ -91,7 +91,16 @@ namespace DocConversion.ConApp
                 {
                     Key = $"{++mnuIdx}",
                     Text = ToLabelText("Path", "Change source path"),
-                    Action = (self) => DocumentsPath = SelectOrChangeToSubPath(DocumentsPath, [ SourcePath ]),
+                    Action = (self) => 
+                    {
+                        var savePath = DocumentsPath;
+                        
+                        DocumentsPath = SelectOrChangeToSubPath(DocumentsPath, [ SourcePath ]);
+                        if (savePath != DocumentsPath)
+                        {
+                            PageIndex = 0;
+                        }
+                    },
                 },
                 CreateMenuSeparator(),
             };
@@ -157,7 +166,7 @@ namespace DocConversion.ConApp
 
                     result.AddRange(IncludeReadMe(path, absoluteFilePath, level));
                 }
-                else if (line.StartsWith("[insert_acinfo]", StringComparison.CurrentCultureIgnoreCase))
+                else if (line.StartsWith("[insert_links_from_info]", StringComparison.CurrentCultureIgnoreCase))
                 {
                     var includeUrl = line.Betweenstring("(", ")");
                     var includeFilePath = line.Betweenstring(")(", ")");
