@@ -50,6 +50,7 @@ namespace DocConversion.ConApp
         /// Gets or sets the path to the documents.
         /// </summary>
         private static string DocumentsPath { get; set; }
+        private static string CreatorPattern { get; set; } = "rm_creator*.md";
         #endregion app properties
 
         #region overrides
@@ -66,8 +67,9 @@ namespace DocConversion.ConApp
             PrintLine('=', count);
             PrintLine();
             ForegroundColor = saveForeColor;
-            PrintLine($"Force flag:    {Force}");
-            PrintLine($"Document path: {DocumentsPath}");
+            PrintLine($"Force flag:      {Force}");
+            PrintLine($"Document path:   {DocumentsPath}");
+            PrintLine($"Creator pattern: {CreatorPattern}");
             PrintLine();
         }
 
@@ -102,6 +104,12 @@ namespace DocConversion.ConApp
                         }
                     },
                 },
+                new()
+                {
+                    Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Creator", "Change creator pattern"),
+                    Action = (self) => ChangeCreatorPattern(),
+                },
                 CreateMenuSeparator(),
             };
 
@@ -110,7 +118,7 @@ namespace DocConversion.ConApp
                 mnuIdx += 10 - (mnuIdx % 10);
             }
 
-            var files = Program.GetFiles(DocumentsPath, "rm_creator*.md", [ ".md", "*.txt" ]).ToArray();
+            var files = Program.GetFiles(DocumentsPath, CreatorPattern, [ ".md", "*.txt" ]).ToArray();
 
             menuItems.AddRange(CreatePageMenuItems(ref mnuIdx, files, (item, menuItem) =>
             {
@@ -129,6 +137,10 @@ namespace DocConversion.ConApp
         #endregion overrides
 
         #region app-methods
+        private static void ChangeCreatorPattern()
+        {
+            CreatorPattern = ReadLine("Enter the creator pattern: ").Trim();
+        }
         /// <summary>
         /// Creates a ReadMe file based on the provided file path.
         /// </summary>
