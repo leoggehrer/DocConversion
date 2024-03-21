@@ -118,6 +118,11 @@ namespace DocConversion.ConApp
                 CreateMenuSeparator(),
             };
 
+            if (mnuIdx % 10 != 0)
+            {
+                mnuIdx += 10 - (mnuIdx % 10);
+            }
+
             var files = Program.GetFiles(DocumentsPath, "*.*", [".pdf", ".doc", ".docx"]).ToArray();
 
             menuItems.AddRange(CreatePageMenuItems(ref mnuIdx, files, (item, menuItem) =>
