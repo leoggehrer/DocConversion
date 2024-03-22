@@ -19,7 +19,7 @@ namespace DocConversion.ConApp
         {
             ClassConstructing();
             ConversionFileName = "ReadMe.md";
-            ConversionPath = Path.Combine(UserPath, "Convert");// Program.TargetPath;
+            ConversionPath = SourcePath;
             DocumentsPath = Path.Combine(UserPath, "Downloads");// Program.DocumentsPath;);
             ClassConstructed();
         }
