@@ -68,6 +68,7 @@ namespace DocConversion.ConApp
             PrintLine();
             ForegroundColor = saveForeColor;
             PrintLine($"Force flag:      {Force}");
+            PrintLine($"Max. path depth: {MaxSubPathDepth}");
             PrintLine($"Document path:   {DocumentsPath}");
             PrintLine($"Creator pattern: {CreatorPattern}");
             PrintLine();
@@ -92,12 +93,18 @@ namespace DocConversion.ConApp
                 new()
                 {
                     Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Depth", "Change max sub path depth"),
+                    Action = (self) => ChangeMaxSubPathDepth(),
+                },
+                new()
+                {
+                    Key = $"{++mnuIdx}",
                     Text = ToLabelText("Path", "Change source path"),
                     Action = (self) => 
                     {
                         var savePath = DocumentsPath;
                         
-                        DocumentsPath = SelectOrChangeToSubPath(DocumentsPath, [ SourcePath ]);
+                        DocumentsPath = SelectOrChangeToSubPath(DocumentsPath, MaxSubPathDepth, [ SourcePath ]);
                         if (savePath != DocumentsPath)
                         {
                             PageIndex = 0;

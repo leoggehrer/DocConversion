@@ -66,8 +66,14 @@
                 new()
                 {
                     Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Depth", "Change max sub path depth"),
+                    Action = (self) => ChangeMaxSubPathDepth(),
+                },
+                new()
+                {
+                    Key = $"{++mnuIdx}",
                     Text = ToLabelText("Path", "Change source path"),
-                    Action = (self) => SourcePath = SelectOrChangeToSubPath(SourcePath, SourcePath),
+                    Action = (self) => SourcePath = SelectOrChangeToSubPath(SourcePath, MaxSubPathDepth, SourcePath),
                 },
                 CreateMenuSeparator(),
                 new()
@@ -108,8 +114,9 @@
             PrintLine('=', count);
             PrintLine();
             ForegroundColor = saveForeColor;
-            PrintLine($"Force flag:     {Force}");
-            PrintLine($"Source path:    {SourcePath}");
+            PrintLine($"Force flag:      {Force}");
+            PrintLine($"Max. path depth: {MaxSubPathDepth}");
+            PrintLine($"Source path:     {SourcePath}");
             PrintLine();
         }
         #endregion overrides

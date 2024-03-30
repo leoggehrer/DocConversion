@@ -84,8 +84,14 @@ namespace DocConversion.ConApp
                 new()
                 {
                     Key = $"{++mnuIdx}",
+                    Text = ToLabelText("Depth", "Change max sub path depth"),
+                    Action = (self) => ChangeMaxSubPathDepth(),
+                },
+                new()
+                {
+                    Key = $"{++mnuIdx}",
                     Text = ToLabelText("Document path", "Change document path"),
-                    Action = (self) => DocumentsPath =  SelectOrChangeToSubPath(DocumentsPath, SourcePath),
+                    Action = (self) => DocumentsPath =  SelectOrChangeToSubPath(DocumentsPath, -1, SourcePath),
                 },
                 CreateMenuSeparator(),
             };
@@ -124,8 +130,9 @@ namespace DocConversion.ConApp
             PrintLine('=', count);
             PrintLine();
             ForegroundColor = saveForeColor;
-            PrintLine($"Force flag:    {Force}");
-            PrintLine($"Document path: {DocumentsPath}");
+            PrintLine($"Force flag:       {Force}");
+            PrintLine($"Max. path depth:  {MaxSubPathDepth}");
+            PrintLine($"Document path:    {DocumentsPath}");
             PrintLine();
         }
         #endregion overrides
