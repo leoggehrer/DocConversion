@@ -18,9 +18,9 @@ namespace DocConversion.ConApp
         static ConverterApp()
         {
             ClassConstructing();
-            ConversionFileName = "ReadMe.md";
+            ConversionFileName = "Task.md";
             ConversionPath = SourcePath;
-            DocumentsPath = Path.Combine(UserPath, "Downloads");// Program.DocumentsPath;);
+            DocumentsPath = Path.Combine(UserPath, "Downloads");
             ClassConstructed();
         }
         /// <summary>
@@ -47,6 +47,7 @@ namespace DocConversion.ConApp
         public ConverterApp()
         {
             Constructing();
+            MaxSubPathDepth = 1;
             Constructed();
         }
         /// <summary>
@@ -82,16 +83,16 @@ namespace DocConversion.ConApp
             var menuItems = new List<MenuItem>
             {
                CreateMenuSeparator(),
-               new()
-               {
+                new()
+                {
                     Key = $"{++mnuIdx}",
-                    Text = ToLabelText("Force", "Change force flag"),
+                    Text = ToLabelText($"{Force}", "Change force flag"),
                     Action = (self) => ChangeForce(),
                 },
                 new()
                 {
                     Key = $"{++mnuIdx}",
-                    Text = ToLabelText("Depth", "Change max sub path depth"),
+                    Text = ToLabelText($"{MaxSubPathDepth}", "Change max sub path depth"),
                     Action = (self) => ChangeMaxSubPathDepth(),
                 },
                 new()
@@ -150,21 +151,12 @@ namespace DocConversion.ConApp
         /// </summary>
         protected override void PrintHeader()
         {
-            var count = 0;
-            var saveForeColor = ForegroundColor;
-
-            ForegroundColor = ConsoleColor.Green;
-
-            count = PrintLine("Document-Converter");
-            PrintLine('=', count);
-            PrintLine();
-            ForegroundColor = saveForeColor;
-            PrintLine($"Force flag:           {Force}");
-            PrintLine($"Max. path depth:      {MaxSubPathDepth}");
-            PrintLine($"Document path:        {DocumentsPath}");
-            PrintLine($"Conversiom path:      {ConversionPath}");
-            PrintLine($"Conversion file name: {ConversionFileName}");
-            PrintLine();
+            base.PrintHeader(nameof(DocConversionApp),
+            [
+                new("Document path:", DocumentsPath),
+                new("Conversion path:", ConversionPath),
+                new("Conversion file name:", ConversionFileName),
+            ]);
         }
         #endregion overrides
 

@@ -10,7 +10,6 @@
         static DocConversionApp()
         {
             ClassConstructing();
-            DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             ClassConstructed();
         }
         /// <summary>
@@ -30,6 +29,7 @@
         public DocConversionApp()
         {
             Constructing();
+            MaxSubPathDepth = 1;
             Constructed();
         }
         /// <summary>
@@ -41,10 +41,6 @@
         /// </summary>
         partial void Constructed();
         #endregion Instance-Constructors
-
-        #region app properties
-        private static string DocumentsPath { get; set; }
-        #endregion app properties
 
         #region overrides
         /// <summary>
@@ -60,20 +56,14 @@
                 new()
                 {
                     Key = $"{++mnuIdx}",
-                    Text = ToLabelText("Force", "Change force flag"),
+                    Text = ToLabelText($"{Force}", "Change force flag"),
                     Action = (self) => ChangeForce(),
                 },
                 new()
                 {
                     Key = $"{++mnuIdx}",
-                    Text = ToLabelText("Depth", "Change max sub path depth"),
+                    Text = ToLabelText($"{MaxSubPathDepth}", "Change max sub path depth"),
                     Action = (self) => ChangeMaxSubPathDepth(),
-                },
-                new()
-                {
-                    Key = $"{++mnuIdx}",
-                    Text = ToLabelText("Path", "Change source path"),
-                    Action = (self) => SourcePath = SelectOrChangeToSubPath(SourcePath, MaxSubPathDepth, SourcePath),
                 },
                 CreateMenuSeparator(),
                 new()
@@ -105,19 +95,7 @@
         /// <param name="sourcePath">The path of the solution.</param>
         protected override void PrintHeader()
         {
-            var count = 0;
-            var saveForeColor = ForegroundColor;
-
-            ForegroundColor = ConsoleColor.Green;
-
-            count = PrintLine(nameof(DocConversionApp));
-            PrintLine('=', count);
-            PrintLine();
-            ForegroundColor = saveForeColor;
-            PrintLine($"Force flag:      {Force}");
-            PrintLine($"Max. path depth: {MaxSubPathDepth}");
-            PrintLine($"Source path:     {SourcePath}");
-            PrintLine();
+            base.PrintHeader(nameof(DocConversionApp));
         }
         #endregion overrides
 

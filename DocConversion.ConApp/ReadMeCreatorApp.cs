@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using CommonTool;
 using CommonTool.Extensions;
 
 namespace DocConversion.ConApp
@@ -33,6 +34,7 @@ namespace DocConversion.ConApp
         public ReadMeCreatorApp()
         {
             Constructing();
+            MaxSubPathDepth = 1;
             Constructed();
         }
         /// <summary>
@@ -59,19 +61,11 @@ namespace DocConversion.ConApp
         /// </summary>
         protected override void PrintHeader()
         {
-            var saveForeColor = ForegroundColor;
-
-            ForegroundColor = ConsoleColor.Green;
-
-            var count = PrintLine("ReadMe-Creator");
-            PrintLine('=', count);
-            PrintLine();
-            ForegroundColor = saveForeColor;
-            PrintLine($"Force flag:      {Force}");
-            PrintLine($"Max. path depth: {MaxSubPathDepth}");
-            PrintLine($"Document path:   {DocumentsPath}");
-            PrintLine($"Creator pattern: {CreatorPattern}");
-            PrintLine();
+            base.PrintHeader(nameof(DocConversionApp),
+            [
+                new("Document path:", DocumentsPath),
+                new("Creaator pattern:", CreatorPattern),
+            ]);
         }
 
         /// <summary>
@@ -87,23 +81,23 @@ namespace DocConversion.ConApp
                 new()
                 {
                     Key = $"{++mnuIdx}",
-                    Text = ToLabelText("Force", "Change force flag"),
+                    Text = ToLabelText($"{Force}", "Change force flag"),
                     Action = (self) => ChangeForce(),
                 },
                 new()
                 {
                     Key = $"{++mnuIdx}",
-                    Text = ToLabelText("Depth", "Change max sub path depth"),
+                    Text = ToLabelText($"{MaxSubPathDepth}", "Change max sub path depth"),
                     Action = (self) => ChangeMaxSubPathDepth(),
                 },
                 new()
                 {
                     Key = $"{++mnuIdx}",
-                    Text = ToLabelText("Path", "Change source path"),
-                    Action = (self) => 
+                    Text = ToLabelText("Path", "Change document path"),
+                    Action = (self) =>
                     {
                         var savePath = DocumentsPath;
-                        
+
                         DocumentsPath = SelectOrChangeToSubPath(DocumentsPath, MaxSubPathDepth, [ SourcePath ]);
                         if (savePath != DocumentsPath)
                         {
@@ -125,7 +119,8 @@ namespace DocConversion.ConApp
                 mnuIdx += 10 - (mnuIdx % 10);
             }
 
-            var files = Program.GetFiles(DocumentsPath, CreatorPattern, [ ".md", "*.txt" ]).ToArray();
+//            var files_ = Program.GetFiles(DocumentsPath, CreatorPattern, [".md", "*.txt"]).ToArray();
+            var files = TemplatePath.GetFiles(DocumentsPath, [ CreatorPattern ], MaxSubPathDepth).ToArray();
 
             menuItems.AddRange(CreatePageMenuItems(ref mnuIdx, files, (item, menuItem) =>
             {
